@@ -41,12 +41,10 @@ export class MyUserService implements UserService<User, Credentials> {
   }
 
   async verifyCustomCredentials(credentials: CustomCredentials): Promise<User> {
-    const invalidCredentialsError = 'Invalid username or password.';
+    const invalidCredentialsError = 'Invalid email or password.';
 
     const foundUser = await this.userRepository.findOne({
-      where: credentials.email
-        ? {email: credentials.email}
-        : {username: credentials.username},
+      where: {email: credentials.email},
     });
     if (!foundUser) {
       throw new HttpErrors.Unauthorized(invalidCredentialsError);
@@ -76,7 +74,7 @@ export class MyUserService implements UserService<User, Credentials> {
       [securityId]: user.id.toString(),
       name: user.name,
       id: user.id,
-      username: user.username,
+      email: user.email,
     };
   }
 

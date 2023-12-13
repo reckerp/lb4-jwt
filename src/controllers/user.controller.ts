@@ -23,30 +23,7 @@ import {CustomCredentials, User} from '../models';
 import {UserRepository} from '../repositories';
 import {MyUserService} from '../services';
 
-// Describes the type of grant object taken in by method "refresh"
-type RefreshGrant = {
-  refreshToken: string;
-};
 
-// Describes the schema of grant object
-const RefreshGrantSchema: SchemaObject = {
-  type: 'object',
-  required: ['refreshToken'],
-  properties: {
-    refreshToken: {
-      type: 'string',
-    },
-  },
-};
-
-// Describes the request body of grant object
-const RefreshGrantRequestBody = {
-  description: 'Reissuing Acess Token',
-  required: true,
-  content: {
-    'application/json': {schema: RefreshGrantSchema},
-  },
-};
 
 // Describe the schema of user credentials
 const CredentialsSchema: SchemaObject = {
@@ -56,9 +33,6 @@ const CredentialsSchema: SchemaObject = {
     email: {
       type: 'string',
       format: 'email',
-    },
-    username: {
-      type: 'string',
     },
     password: {
       type: 'string',
@@ -137,11 +111,11 @@ export class UserController {
     const existingUserList = await this.userRepository
       .find(
         new WhereBuilder()
-          .eq("username", newUserRequest.username)
+          .eq("email", newUserRequest.email)
       )
     const {response} = this.requestCtx;
     if (existingUserList.length > 0) return response.status(400).send({
-      error: "User with given username already exists"
+      error: "User with given email already exists"
     });
     const password = await hash(newUserRequest.password, await genSalt());
     delete (newUserRequest as Partial<NewUserRequest>).password;
